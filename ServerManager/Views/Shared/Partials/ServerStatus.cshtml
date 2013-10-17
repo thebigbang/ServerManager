@@ -1,0 +1,11 @@
+﻿@model ServerManager.Models.ServerStatusModel
+@*todo: add image of turned on/off computer*@
+@if(Model.IsStarted)
+{
+    @Html.Label("ONLINE", new {style = "color:green"})
+    @Html.ActionLink("Turn Off","ShutdownServer","Servers",new{id=Model.Id},null)
+}else
+{
+    @Html.Label("OFFLINE", new {style = "color:grey"})
+    @Html.ActionLink("Turn On","StartupServer","Servers",new{id=Model.Id},null)
+}

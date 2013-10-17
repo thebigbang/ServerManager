@@ -1,0 +1,30 @@
+﻿@{
+    ViewBag.Title = "About";
+}
+
+<hgroup class="title">
+    <h1>@ViewBag.Title.</h1>
+    <h2>@ViewBag.Message</h2>
+</hgroup>
+
+<article>
+    <p>
+        This internal website is intended to provide ease of access to server management inside a network.
+        <br/>
+        It rely on powershell inside the main server to startup/shutdown servers.
+        <br/>
+        For servers that are allowing remote Powershell management, there will be a powershell CLI avaiable too.
+    </p>
+</article>
+
+<aside>
+    <h3>Aside Title</h3>
+    <p>Made by Jérémy Meï-Garino
+        <br/>View sources for licence and licence.txt
+    </p>
+    <ul>
+        <li>@Html.ActionLink("Home", "Index", "Home")</li>
+        <li>@Html.ActionLink("About", "About", "Home")</li>
+        <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+    </ul>
+</aside>

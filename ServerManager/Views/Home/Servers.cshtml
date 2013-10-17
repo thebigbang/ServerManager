@@ -1,0 +1,17 @@
+﻿@using ServerManager
+@model List<Servers>
+
+@{
+    ViewBag.Title = "Servers";
+}
+
+<h2>Servers</h2>
+@foreach (Servers server in Model)
+{
+    <fieldset>
+        <legend>@server.FriendlyName</legend>
+        <h3>@server.FriendlyName</h3>
+        @{Html.RenderAction("GetStatus","Servers",new{id=server.Id});}
+        @*todo: propose more options/actions.*@
+    </fieldset>
+}

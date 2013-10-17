@@ -1,0 +1,23 @@
+ServerManager is a Windows Asp.Net MVC4 project that indent to ease the life of [Windows] Servers Administrators.
+Maybe in later version it will allow to open shell command to some linux machine too, but it is not it's main purpose at the moment.
+
+The initial goal is to provide a simple single interface for every servers on a network, and to allow start/shutdown on one click.
+There is an initial configuration process in which you just need to add server information and well... you'll be ready to go.
+
+#todo#
+-Full Async operation for JS enabled browsers, keep the "classics" one for the others (well a Enhanced security mode for IE disable JS so it's important to keep it in good shape.)
+-Add powershell CLI for target server
+-Add more information about server when powered on like
+	-CPU status
+	-RAM status
+	-NIC usage
+	-HDD usage
+-Add visual entry, to make a cool UI
+-Improve ease of access on smartphone, touchscreen and tablet in general.
+-don't store as cleartext the session password.
+
+#Changelog#
+v0.1: Startup of project with original goal: being able to startup/shutdown some windows (computers) servers inside a network from a single interface.
+	GPL Licensing for Github.
+
+Everything is under copyrith 2013 by Meï-Garino Jérémy.

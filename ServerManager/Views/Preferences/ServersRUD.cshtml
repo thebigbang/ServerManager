@@ -1,0 +1,56 @@
+﻿@using ServerManager
+@model List<Servers>
+@*todo: jquery on doubleclick to edit elements and save on click outside, phpmyadmin like stuff.*@
+@using (Html.BeginForm("UpdateServers", "Preferences"))
+{
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Mac Address</th>
+            <th>Powershell Session Address</th>
+            <th>Ip Address</th>
+            <th>Credentials</th>
+            <th></th>
+        </tr>
+        @for (int i = 0; i < Model.Count;i++ )
+        {
+            <tr>
+                <td>@Html.TextBoxFor(s => s[i].FriendlyName)</td>
+                <td>@Html.TextBoxFor(s => s[i].MacAddress)</td>
+                <td>@Html.TextBoxFor(s => s[i].RemotePSAddress)</td>
+                <td>@Html.TextBoxFor(s => s[i].IPAddress)</td>
+                <td>Username:<br />@Html.TextBoxFor(s => s[i].Username)<br />Password:<br />@Html.TextBoxFor(s => s[i].Password)</td>
+                <td>
+                    @Html.HiddenFor(s=>s[i].Id)
+                    @*todo: usual stuff about deleting element async + removing row...*@
+                    @Html.ActionLink("Delete", "DeleteServer", "Preferences", new { id = Model[i].Id }, null)
+                </td>
+            </tr>
+        }
+    </table>
+    <input type="submit" value="Update Servers"/>
+}
+@*todo: add more server thanks to JS code.*@
+@using(Html.BeginForm("CreateServer","Preferences")){
+    <fieldset>
+        <legend>New Server</legend>
+        @Html.Label("Name")
+        <br/>@Html.TextBox("friendlyName")
+        <br/>
+        @Html.Label("MAC Address")
+        <br/>@Html.TextBox("macAddress")
+        <br/>
+        @Html.Label("Powershell Session Address")
+        <br/>@Html.TextBox("remotePSAddress")
+        <br/>
+        @Html.Label("Powershell Session Username")
+        <br/>@Html.TextBox("username")
+        <br/>
+        @Html.Label("Powershell Session Password")
+        <br/>@Html.TextBox("password")
+        <br/>
+        @Html.Label("IP Address")
+        <br/>@Html.TextBox("IPAddress")
+    </fieldset>
+    <input type="submit" value="Add Server"/>
+}

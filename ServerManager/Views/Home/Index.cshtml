@@ -1,0 +1,33 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+@section featured {
+    <section class="featured">
+        <div class="content-wrapper">
+            <hgroup class="title">
+                <h1>@ViewBag.Title.</h1>
+                <h2>@ViewBag.Message</h2>
+            </hgroup>
+            <p>
+                Why have i done that Server manager? Just because i'm tired of opening and running by hand powershell scripts to startup and shutdown my several servers.
+                <br/>
+                Because having a CLI on my server while on the go can be usefull and fun, and will be much easier from a smartphone or tablet thanks to a webinterface than needing a windows PC everytime.
+                <br/>
+                Look into the readme of the projetc for changelogs and todo list.
+            </p>
+        </div>
+    </section>
+}
+<h3>We suggest the following:</h3>
+<ol class="round">
+    <li class="one">
+        <h5>Getting Started</h5>
+        That intranet website use a local database file with an entity schema file.
+        <br/>
+        It requires Windows Authentication.
+        <br/>
+        It rely on powershell for most of the command issued (startup/shutdown server for example...).
+        <br/>
+        It is based on an MVC4 Model, that will be upgraded for handheld devices in the future.
+    </li>
+</ol>
