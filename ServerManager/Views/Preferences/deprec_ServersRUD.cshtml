@@ -32,25 +32,54 @@
 }
 @*todo: add more server thanks to JS code.*@
 @using(Html.BeginForm("CreateServer","Preferences")){
-    <fieldset>
+    <div id="createBoxSrv">
+    <fieldset id="newServer1">
         <legend>New Server</legend>
         @Html.Label("Name")
-        <br/>@Html.TextBox("friendlyName")
+        <br/>@Html.TextBox("friendlyName1")
         <br/>
         @Html.Label("MAC Address")
-        <br/>@Html.TextBox("macAddress")
+        <br/>@Html.TextBox("macAddress1")
         <br/>
         @Html.Label("Powershell Session Address")
-        <br/>@Html.TextBox("remotePSAddress")
+        <br/>@Html.TextBox("remotePSAddress1")
         <br/>
         @Html.Label("Powershell Session Username")
-        <br/>@Html.TextBox("username")
+        <br/>@Html.TextBox("username1")
         <br/>
         @Html.Label("Powershell Session Password")
-        <br/>@Html.TextBox("password")
+        <br/>@Html.TextBox("password1")
         <br/>
         @Html.Label("IP Address")
-        <br/>@Html.TextBox("IPAddress")
+        <br/>@Html.TextBox("IPAddress1")
     </fieldset>
+        </div>
+    <button type="button" id="addSrvButton" title="Add another server"
+                    style="width: 35px">
+        <b>+</b></button>
     <input type="submit" value="Add Server"/>
+}
+@section scripts{
+    <script type="text/javascript">
+        function onFailure(result) {
+            alert(result);
+        }
+        var i = 2;
+        function newSrvBox() {
+            var mainField = $("#newServer1").clone();
+            $(mainField).find("#friendlyName1").attr("id", "friendlyName" + i);
+            $(mainField).find("#macAddress1").attr("id", "macAddress" + i);
+            $(mainField).find("#remotePSAddress1").attr("id", "remotePSAddress" + i);
+            $(mainField).find("#username1").attr("id", "username" + i);
+            $(mainField).find("#password1").attr("id", "password" + i);
+            $(mainField).find("#IPAddress1").attr("id", "IPAddress" + i);
+            i++;
+            $(mainField).appendTo("#createBoxSrv");
+        }
+        $(function() {
+            $("#addSrvButton").click(function () {
+                newSrvBox();
+            });
+        });
+    </script>
 }

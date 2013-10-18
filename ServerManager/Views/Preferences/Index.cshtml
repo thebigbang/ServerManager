@@ -1,6 +1,175 @@
-﻿@{
+﻿@model List<ServerManager.Servers>
+@{
     ViewBag.Title = "Preferences";
 }
 
 <h2>@ViewBag.Title</h2>
-@{Html.RenderAction("GetAllServers","Preferences");}
+@using (Html.BeginForm("UpdateServers", "Preferences"))
+{
+    <table id="updateTable">
+        <tr style="background:#888888">
+            <th>Name</th>
+            <th>Mac Address</th>
+            <th>Powershell Session Address</th>
+            <th>Ip Address</th>
+            <th>Credentials</th>
+            <th></th>
+        </tr>
+        @for (int i = 0; i < Model.Count; i++)
+        {
+            <tr id="@String.Concat("listRowId", Model[i].Id)">
+                <td style="background: #cccccc">@Html.TextBoxFor(s => s[i].FriendlyName)</td>
+                <td>@Html.TextBoxFor(s => s[i].MacAddress)</td>
+                <td style="background: #cccccc">@Html.TextBoxFor(s => s[i].RemotePSAddress)</td>
+                <td>@Html.TextBoxFor(s => s[i].IPAddress)</td>
+                <td style="background: #cccccc">Username:<br />@Html.TextBoxFor(s => s[i].Username)<br />
+                    Password:<br />@Html.TextBoxFor(s => s[i].Password)</td>
+                <td>
+                    @Html.HiddenFor(s => s[i].Id)
+                    @Ajax.ActionLink("Delete", "DeleteServer", "Preferences", new { id = Model[i].Id }, new AjaxOptions
+           {
+               Confirm = "You are going to remove \"" + Model[i].FriendlyName + "\", are you sure of that?",
+               HttpMethod = "Post",
+               OnSuccess = "removeCurrentLine('" + Model[i].Id + "');",
+               OnFailure = "onFailure"
+           })
+                </td>
+            </tr>
+        }
+    </table>
+    <input type="submit" value="Update Servers" />
+}
+@using (Ajax.BeginForm("CreateServer", "Preferences",new AjaxOptions
+    {
+        OnSuccess = "addServerLineUpdate",
+        HttpMethod = "Post",
+        OnFailure = "onFailure"
+    }))
+    {
+    <div id="createBoxSrv">
+        <fieldset id="newServer1">
+            <legend>New Server</legend>
+            @Html.Label("Name")
+            <br />@Html.TextBox("[0].friendlyName", "", new { id = "_0__friendlyName" })
+            <br />
+            @Html.Label("MAC Address")
+            <br />@Html.TextBox("[0].macAddress", "", new { id = "_0__macAddress" })
+            <br />
+            @Html.Label("Powershell Session Address")
+            <br />@Html.TextBox("[0].remotePSAddress", "", new { id = "_0__remotePSAddress" })
+            <br />
+            @Html.Label("Powershell Session Username")
+            <br />@Html.TextBox("[0].username", "", new { id = "_0__username" })
+            <br />
+            @Html.Label("Powershell Session Password")
+            <br />@Html.TextBox("[0].password", "", new { id = "_0__password" })
+            <br />
+            @Html.Label("IP Address")
+            <br />@Html.TextBox("[0].IPAddress", "", new { id = "_0__IPAddress" })
+        </fieldset>
+        <p style="height: 10px; background: white" id="sepa1" />
+    </div>
+    <button type="button" id="addSrvButton" title="Add another server"
+        style="width: 35px">
+        <b>+</b></button>
+    <input type="submit" value="Add Server" />
+}
+@section scripts{
+    
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+        function onFailure(result) {
+            alert(result);
+        }
+        function addServerLineUpdate() {
+            var serversRow = $("#updateTable")["last-child"].clone();
+            if($(serversRow).attr("id")==""||$(serversRow).attr("id")==null) {
+                //no existing row will generate a full one... (index 0)
+                //window.location.reload();
+                //todo later...
+            }else {
+                //get that clone and edit it!
+                var indexRow = $(serversRow).attr("id").replace("listRowId", "") + 1;
+                $("span.view", serversRow).remove();
+                //we now should have only textboxes... update'em:
+                $(serversRow).find("input").each(function () {
+                    //todo: need some JS debug...
+                    //should rename properly
+                    //note will work only for 1 server at a time operation at the moment
+                    //todo later: multi server at same time support.
+                    $(this).attr("name", "[" + indexRow + "]." + $(this).attr("name").split(".", $(this).attr("name"))[1]);
+                    if($(this).attr("type") =="hidden") {
+                        $(this).val(indexRow);
+                    } else if ($(this).attr("name").indexOf("FriendlyName") >= 0) {
+                        $(this).val($("#_0__friendlyName").val());
+                        $("#_0__friendlyName").val("");
+                    } else if ($(this).attr("name").indexOf("RemotePSAddress") >= 0) {
+                        $(this).val($("#_0__RemotePSAddress").val());
+                        $("#_0__RemotePSAddress").val("");
+                    } else if ($(this).attr("name").indexOf("MacAddress") >= 0) {
+                        $(this).val($("#_0__MacAddress").val());
+                        $("#_0__MacAddress").val("");
+                    } else if ($(this).attr("name").indexOf("IPAddress") >= 0) {
+                        $(this).val($("#_0__IPAddress").val());
+                        $("#_0__IPAddress").val("");
+                    } else if ($(this).attr("name").indexOf("Username") >= 0) {
+                        $(this).val($("#_0__Username").val());
+                        $("#_0__Username").val("");
+                    } else if ($(this).attr("name").indexOf("Password") >= 0) {
+                        $(this).val($("#_0__Password").val());
+                        $("#_0__Password").val("");
+                    }
+                });
+                $(serversRow).appendTo("#updateTable");
+                //change back textboxes to span if necessary.
+                updateLoader("#updateTable");
+            }
+        }
+        var i = 1;
+        function newSrvBox() {
+            var mainField = $("#newServer1").clone();
+            $(mainField).attr("id", "newServer[" + i + "]");
+            $(mainField).find("#_0__friendlyName").attr("name", "[" + i + "].friendlyName");
+            $(mainField).find("#_0__macAddress").attr("name", "[" + i + "].macAddress");
+            $(mainField).find("#_0__remotePSAddress").attr("name", "[" + i + "].remotePSAddress");
+            $(mainField).find("#_0__username").attr("name", "[" + i + "].username");
+            $(mainField).find("#_0__password").attr("name", "[" + i + "].password");
+            $(mainField).find("#_0__IPAddress").attr("name", "[" + i + "].IPAddress");
+            i++;
+            var separator = $("#sepa1").clone();
+            $(separator).attr("id", "sepa" + i);
+            $(mainField).appendTo("#createBoxSrv");
+            $(separator).appendTo("#createBoxSrv");
+        }
+        $(function () {
+            $("#addSrvButton").click(function () {
+                newSrvBox();
+            });
+            updateLoader("#updateTable");
+            
+        });
+        //special update function: change everything to label and back to textbox on double click...
+        function updateLoader(c) {
+            $("span.view", c).remove();
+            $(c).find("input").each(function () {
+                if ($(this).attr("type") != "hidden") {
+                    var txtEv = $("<span />", { text: this.value.length > 0 ? this.value : "N.A", "class": "view" });
+                    txtEv.insertAfter(this);
+                    $(this).hide();
+                    txtEv.dblclick(function () {
+                        $(this).closest("td").find("input,span.view").toggle();
+                    });
+                    $(this).dblclick(function () {
+                        $(this).closest("td").find("input,span.view").toggle();
+                        updateLoader($(this).closest("td"));
+                    });
+                }
+            });
+        }
+        function removeCurrentLine(daL) {
+            var idName = "listRowId" + daL;
+            var box = document.getElementById(idName);
+            $(box).remove();
+        }
+    </script>
+}

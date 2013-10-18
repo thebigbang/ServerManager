@@ -303,7 +303,6 @@
     <Content Include="Views\Home\Servers.cshtml" />
     <Content Include="Views\Shared\Partials\ServerStatus.cshtml" />
     <Content Include="Views\Preferences\Index.cshtml" />
-    <Content Include="Views\Preferences\ServersRUD.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Servers\" />

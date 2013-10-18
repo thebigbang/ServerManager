@@ -17,6 +17,9 @@ There is an initial configuration process in which you just need to add server i
 -don't store as cleartext the session password.
 
 #Changelog#
+v0.2a: intensive jQuery usage in preference screen for a more UI friendly page. Some parts still need some debugging...
+	Beginning of AJAXing requests, still in preference screen yes.
+	already deprecated ServerRUD.cshtml page, was maybe a bad practice, to segmentated code for now... will see later if needed or not.
 v0.1: Startup of project with original goal: being able to startup/shutdown some windows (computers) servers inside a network from a single interface.
 	GPL Licensing for Github.
 

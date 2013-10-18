@@ -30,23 +30,26 @@ namespace ServerManager.Controllers
 
         public ActionResult Index()
         {
-            return View();
+            return View(new database().Servers.ToList());
         }
         public ActionResult GetAllServers()
         {
             return PartialView("ServersRUD", new database().Servers.ToList());
         }
         [HttpPost]
-        public ActionResult CreateServer(Servers newServer)
+        public ActionResult CreateServer(IEnumerable<Servers> newServer)
         {
             database db = new database();
-            db.Servers.Add(newServer);
-            foreach (var dbEntityValidationResult in db.GetValidationErrors())
+            foreach (Servers servers in newServer)
             {
+                db.Servers.Add(servers);   
+            }
+            foreach (var dbEntityValidationResult in db.GetValidationErrors())
+            {//todo: return to error page...
                 Console.WriteLine(dbEntityValidationResult.Entry);
             }
             db.SaveChanges();
-            return View("Index");
+            return View("Index", new database().Servers.ToList());
         }
 
         public ActionResult DeleteServer(int id)
