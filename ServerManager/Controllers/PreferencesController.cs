@@ -32,9 +32,12 @@ namespace ServerManager.Controllers
         {
             return View(new database().Servers.ToList());
         }
+        [Obsolete("since v0.2, seems to be useless")]
         public ActionResult GetAllServers()
         {
+            // ReSharper disable Mvc.PartialViewNotResolved
             return PartialView("ServersRUD", new database().Servers.ToList());
+            // ReSharper restore Mvc.PartialViewNotResolved
         }
         [HttpPost]
         public ActionResult CreateServer(IEnumerable<Servers> newServer)
@@ -45,8 +48,9 @@ namespace ServerManager.Controllers
                 db.Servers.Add(servers);   
             }
             foreach (var dbEntityValidationResult in db.GetValidationErrors())
-            {//todo: return to error page...
-                Console.WriteLine(dbEntityValidationResult.Entry);
+            {
+                return View("Error");
+                //Console.WriteLine(dbEntityValidationResult.Entry);
             }
             db.SaveChanges();
             return View("Index", new database().Servers.ToList());

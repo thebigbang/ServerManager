@@ -30,21 +30,31 @@ namespace ServerManager.Controllers
     {
         public ActionResult GetStatus(int id)
         {
-            //todo: arp -a | select-string "00-24-d4-ac-1d-b1" |% { $_.ToString().Trim().Split(" ")[0] } if ip not set in db
-            //todo: else get it from db and ping it...
             bool isOnline = false;
-            database db=new database();
+            database db = new database();
             Servers current = db.Servers.SingleOrDefault(s => s.Id == id);
-            if(current!=null && !string.IsNullOrEmpty(current.IPAddress))
+            if (current != null)
             {
-                foreach (PSObject psObject in PowershellInteraction.Invoke("ping " + current.IPAddress))
+                string currentIp = current.IPAddress;
+                if (string.IsNullOrEmpty(currentIp))
                 {
-                    if (psObject.BaseObject.ToString().ToLowerInvariant().Contains("host unreachable"))
-                    {
-                        isOnline = false; break; 
-                    }
-                    isOnline = true;
+                    currentIp = PowershellInteraction.GetIpFromMacAddr(current.MacAddress);
                 }
+                if (!string.IsNullOrEmpty(currentIp))
+                {
+                    foreach (PSObject psObject in PowershellInteraction.Invoke("ping " + currentIp))
+                    {
+                        string bo = psObject.BaseObject.ToString().ToLowerInvariant();
+                        if (bo.Contains("host unreachable") ||
+                            bo.Contains("ping request could not find host"))
+                        {
+                            isOnline = false;
+                            break;
+                        }
+                        isOnline = true;
+                    }
+                }
+
             }
             return PartialView("Partials/ServerStatus", new ServerStatusModel { Id = id, IsStarted = isOnline });
         }
@@ -64,7 +74,7 @@ namespace ServerManager.Controllers
             //run powershell stuff:
             string command = "function Code{\n\r" +
             "start-service winrm\n\r" +
-            "winrm s winrm/config/client '@{TrustedHosts=\""+s.RemotePSAddress+"\"}'\n\r" +
+            "winrm s winrm/config/client '@{TrustedHosts=\"" + s.RemotePSAddress + "\"}'\n\r" +
             "$Username = '" + s.Username + "'\n\r" +
             "$Password = '" + s.Password + "'\n\r" +
             "$pass = ConvertTo-SecureString -AsPlainText $Password -Force\n\r" +
@@ -86,22 +96,22 @@ namespace ServerManager.Controllers
         public ActionResult StartupServer(int id)
         {
             Servers s = new database().Servers.SingleOrDefault(se => se.Id == id);
-            if(s==null)throw new ArgumentNullException("id","Was null or invalid");
+            if (s == null) throw new ArgumentNullException("id", "Was null or invalid");
             //rebuild macAddr from 00-00-00 to 0x00,0x00,0x00
             string macAddr = s.MacAddress.Split('-').Aggregate("", (current, macAddPart) => current + ("0x" + macAddPart + ","));
             if (macAddr.EndsWith(",")) macAddr = macAddr.Remove(macAddr.Length - 1);
             //run powershell command to startup the server thanks to magic packets:
-            string command = "function cc{Invoke-Command -ScriptBlock{$mac = [byte[]]("+macAddr+")\n\r"+
-            "$UDPclient = new-Object System.Net.Sockets.UdpClient\n\r"+
-            "$UDPclient.Connect(([System.Net.IPAddress]::Broadcast),4000)\n\r"+
-            "$packet = [byte[]](,0xFF * 102)\n\r"+
-            "6..101 |% { $packet[$_] = $mac[($_%6)]}\n\r"+
-            "\"Send:\"\n\r"+
-            "$packet\n\r"+
-            "$UDPclient.Send($packet, $packet.Length)}}\n\r"+
-            "function Run-Elevated ($scriptblock)\n\r"+
-            "{\n\r"+
-            "$sh = new-object -com 'Shell.Application'\n\r"+
+            string command = "function cc{Invoke-Command -ScriptBlock{$mac = [byte[]](" + macAddr + ")\n\r" +
+            "$UDPclient = new-Object System.Net.Sockets.UdpClient\n\r" +
+            "$UDPclient.Connect(([System.Net.IPAddress]::Broadcast),4000)\n\r" +
+            "$packet = [byte[]](,0xFF * 102)\n\r" +
+            "6..101 |% { $packet[$_] = $mac[($_%6)]}\n\r" +
+            "\"Send:\"\n\r" +
+            "$packet\n\r" +
+            "$UDPclient.Send($packet, $packet.Length)}}\n\r" +
+            "function Run-Elevated ($scriptblock)\n\r" +
+            "{\n\r" +
+            "$sh = new-object -com 'Shell.Application'\n\r" +
             "$sh.ShellExecute('powershell', \"-NoExit -Command $sb\", '', 'runas')\n\r" +
             "}\n\r" +
             "Run-Elevated(cc)\n\r";

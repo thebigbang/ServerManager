@@ -5,6 +5,7 @@ The initial goal is to provide a simple single interface for every servers on a 
 There is an initial configuration process in which you just need to add server information and well... you'll be ready to go.
 
 #todo#
+-add custom jQuery validation, for MAC Address for example.
 -Full Async operation for JS enabled browsers, keep the "classics" one for the others (well a Enhanced security mode for IE disable JS so it's important to keep it in good shape.)
 -Add powershell CLI for target server
 -Add more information about server when powered on like
@@ -17,6 +18,8 @@ There is an initial configuration process in which you just need to add server i
 -don't store as cleartext the session password.
 
 #Changelog#
+v0.3: added support in which we find the ip Address of the server thanks to arp command and the mac address. Helpfull to detect the ip address dynamically and know if server is running or not.
+v0.2b: jQuery debug on preference, now fully update the edit/list row when 1 server is added. Some debug on multiserver added might be needed AND multiserver added on list row update support is needed.
 v0.2a: intensive jQuery usage in preference screen for a more UI friendly page. Some parts still need some debugging...
 	Beginning of AJAXing requests, still in preference screen yes.
 	already deprecated ServerRUD.cshtml page, was maybe a bad practice, to segmentated code for now... will see later if needed or not.

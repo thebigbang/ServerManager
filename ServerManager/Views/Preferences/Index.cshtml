@@ -72,7 +72,8 @@
     <button type="button" id="addSrvButton" title="Add another server"
         style="width: 35px">
         <b>+</b></button>
-    <input type="submit" value="Add Server" />
+        <input type="submit" value="Add Server" />
+    @*todo: add custom jQuery validation, for MAC Address for example.*@
 }
 @section scripts{
     
@@ -82,41 +83,51 @@
             alert(result);
         }
         function addServerLineUpdate() {
-            var serversRow = $("#updateTable")["last-child"].clone();
+            //todo: check multiserver works 100% before updating that method for multiserver support.
+            //$("#createBoxSrv").find("fieldset").each(function(){//encapsulate all in here...
+            var serversRow = $("#updateTable tr:last").clone();
             if($(serversRow).attr("id")==""||$(serversRow).attr("id")==null) {
                 //no existing row will generate a full one... (index 0)
                 //window.location.reload();
                 //todo later...
+                //todo: add header in row id...
             }else {
                 //get that clone and edit it!
-                var indexRow = $(serversRow).attr("id").replace("listRowId", "") + 1;
+                var indexRow = $(serversRow).attr("id").replace("listRowId", "");
+                indexRow++;
+                $(serversRow).attr("id", "listRowId" + indexRow);
                 $("span.view", serversRow).remove();
+                //delete button update:
+                var delButton = $(serversRow).find("a");
+                delButton.attr("href",delButton.attr("href").substr(0,delButton.attr("href").lastIndexOf("/")+1)+ indexRow);
+                delButton.attr("data-ajax-success", "removeCurrentLine('" + indexRow+"')");
                 //we now should have only textboxes... update'em:
                 $(serversRow).find("input").each(function () {
-                    //todo: need some JS debug...
                     //should rename properly
                     //note will work only for 1 server at a time operation at the moment
                     //todo later: multi server at same time support.
-                    $(this).attr("name", "[" + indexRow + "]." + $(this).attr("name").split(".", $(this).attr("name"))[1]);
+                    $(this).attr("name", "[" + indexRow + "]." + $(this).attr("name").split(".")[1]);
                     if($(this).attr("type") =="hidden") {
                         $(this).val(indexRow);
                     } else if ($(this).attr("name").indexOf("FriendlyName") >= 0) {
-                        $(this).val($("#_0__friendlyName").val());
+                        $(this).attr("value", $("#_0__friendlyName").val());
+                        //delButton Text update...
+                        delButton.attr("data-ajax-confirm", delButton.attr("data-ajax-confirm").split("\"")[0] + "\"" + $(this).attr("value") + "\"" + delButton.attr("data-ajax-confirm").split("\"")[2]);
                         $("#_0__friendlyName").val("");
                     } else if ($(this).attr("name").indexOf("RemotePSAddress") >= 0) {
-                        $(this).val($("#_0__RemotePSAddress").val());
+                        $(this).attr("value", $("#_0__RemotePSAddress").val());
                         $("#_0__RemotePSAddress").val("");
                     } else if ($(this).attr("name").indexOf("MacAddress") >= 0) {
-                        $(this).val($("#_0__MacAddress").val());
-                        $("#_0__MacAddress").val("");
+                        $(this).attr("value", $("#_0__macAddress").val());
+                        $("#_0__macAddress").val("");
                     } else if ($(this).attr("name").indexOf("IPAddress") >= 0) {
-                        $(this).val($("#_0__IPAddress").val());
+                        $(this).attr("value",$("#_0__IPAddress").val());
                         $("#_0__IPAddress").val("");
                     } else if ($(this).attr("name").indexOf("Username") >= 0) {
-                        $(this).val($("#_0__Username").val());
+                        $(this).attr("value", $("#_0__Username").val());
                         $("#_0__Username").val("");
                     } else if ($(this).attr("name").indexOf("Password") >= 0) {
-                        $(this).val($("#_0__Password").val());
+                        $(this).attr("value", $("#_0__Password").val());
                         $("#_0__Password").val("");
                     }
                 });
