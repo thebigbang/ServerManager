@@ -19,6 +19,7 @@ There is an initial configuration process in which you just need to add server i
 
 #Changelog#
 v0.3: added support in which we find the ip Address of the server thanks to arp command and the mac address. Helpfull to detect the ip address dynamically and know if server is running or not.
+v0.2c: cleanup of js code in preference screen, multiserver add support on UI return, cleanup of add function (still js side).
 v0.2b: jQuery debug on preference, now fully update the edit/list row when 1 server is added. Some debug on multiserver added might be needed AND multiserver added on list row update support is needed.
 v0.2a: intensive jQuery usage in preference screen for a more UI friendly page. Some parts still need some debugging...
 	Beginning of AJAXing requests, still in preference screen yes.

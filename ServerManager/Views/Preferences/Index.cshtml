@@ -47,7 +47,7 @@
     }))
     {
     <div id="createBoxSrv">
-        <fieldset id="newServer1">
+        <fieldset id="newServer0">
             <legend>New Server</legend>
             @Html.Label("Name")
             <br />@Html.TextBox("[0].friendlyName", "", new { id = "_0__friendlyName" })
@@ -83,69 +83,90 @@
             alert(result);
         }
         function addServerLineUpdate() {
-            //todo: check multiserver works 100% before updating that method for multiserver support.
-            //$("#createBoxSrv").find("fieldset").each(function(){//encapsulate all in here...
-            var serversRow = $("#updateTable tr:last").clone();
-            if($(serversRow).attr("id")==""||$(serversRow).attr("id")==null) {
-                //no existing row will generate a full one... (index 0)
-                //window.location.reload();
-                //todo later...
-                //todo: add header in row id...
-            }else {
-                //get that clone and edit it!
-                var indexRow = $(serversRow).attr("id").replace("listRowId", "");
-                indexRow++;
-                $(serversRow).attr("id", "listRowId" + indexRow);
-                $("span.view", serversRow).remove();
-                //delete button update:
-                var delButton = $(serversRow).find("a");
-                delButton.attr("href",delButton.attr("href").substr(0,delButton.attr("href").lastIndexOf("/")+1)+ indexRow);
-                delButton.attr("data-ajax-success", "removeCurrentLine('" + indexRow+"')");
-                //we now should have only textboxes... update'em:
-                $(serversRow).find("input").each(function () {
-                    //should rename properly
-                    //note will work only for 1 server at a time operation at the moment
-                    //todo later: multi server at same time support.
-                    $(this).attr("name", "[" + indexRow + "]." + $(this).attr("name").split(".")[1]);
-                    if($(this).attr("type") =="hidden") {
-                        $(this).val(indexRow);
-                    } else if ($(this).attr("name").indexOf("FriendlyName") >= 0) {
-                        $(this).attr("value", $("#_0__friendlyName").val());
-                        //delButton Text update...
-                        delButton.attr("data-ajax-confirm", delButton.attr("data-ajax-confirm").split("\"")[0] + "\"" + $(this).attr("value") + "\"" + delButton.attr("data-ajax-confirm").split("\"")[2]);
-                        $("#_0__friendlyName").val("");
-                    } else if ($(this).attr("name").indexOf("RemotePSAddress") >= 0) {
-                        $(this).attr("value", $("#_0__RemotePSAddress").val());
-                        $("#_0__RemotePSAddress").val("");
-                    } else if ($(this).attr("name").indexOf("MacAddress") >= 0) {
-                        $(this).attr("value", $("#_0__macAddress").val());
-                        $("#_0__macAddress").val("");
-                    } else if ($(this).attr("name").indexOf("IPAddress") >= 0) {
-                        $(this).attr("value",$("#_0__IPAddress").val());
-                        $("#_0__IPAddress").val("");
-                    } else if ($(this).attr("name").indexOf("Username") >= 0) {
-                        $(this).attr("value", $("#_0__Username").val());
-                        $("#_0__Username").val("");
-                    } else if ($(this).attr("name").indexOf("Password") >= 0) {
-                        $(this).attr("value", $("#_0__Password").val());
-                        $("#_0__Password").val("");
-                    }
-                });
-                $(serversRow).appendTo("#updateTable");
-                //change back textboxes to span if necessary.
-                updateLoader("#updateTable");
-            }
+            var currentFieldIndex=0;
+            $("#createBoxSrv").find("fieldset").each(function () {
+                var serversRow = $("#updateTable tr:last").clone();
+                if ($(serversRow).attr("id") == "" || $(serversRow).attr("id") == null) {
+                    //no existing row will generate a full one... (index 0)
+                    //window.location.reload();
+                    //todo later...
+                    //todo: add header in row id...
+                } else {
+                    //get that clone and edit it!
+                    var indexRow = $(serversRow).attr("id").replace("listRowId", "");
+                    indexRow++;
+                    $(serversRow).attr("id", "listRowId" + indexRow);
+                    $("span.view", serversRow).remove();
+                    //delete button update:
+                    var delButton = $(serversRow).find("a");
+                    delButton.attr("href", delButton.attr("href").substr(0, delButton.attr("href").lastIndexOf("/") + 1) + indexRow);
+                    delButton.attr("data-ajax-success", "removeCurrentLine('" + indexRow + "')");
+                    //we now should have only textboxes... update'em:
+                    $(serversRow).find("input").each(function() {
+                        $(this).attr("name", "[" + indexRow + "]." + $(this).attr("name").split(".")[1]);
+                        if ($(this).attr("type") == "hidden") {
+                            $(this).val(indexRow);
+                        } else if ($(this).attr("name").indexOf("FriendlyName") >= 0) {
+                            $(this).attr("value", $("#_" + currentFieldIndex + "__friendlyName").val());
+                            //delButton Text update...
+                            delButton.attr("data-ajax-confirm", delButton.attr("data-ajax-confirm").split("\"")[0] + "\"" + $(this).attr("value") + "\"" + delButton.attr("data-ajax-confirm").split("\"")[2]);
+                            $("#_"+currentFieldIndex+"__friendlyName").val("");
+                        } else if ($(this).attr("name").indexOf("RemotePSAddress") >= 0) {
+                            $(this).attr("value", $("#_" + currentFieldIndex + "__RemotePSAddress").val());
+                            $("#_" + currentFieldIndex + "__RemotePSAddress").val("");
+                        } else if ($(this).attr("name").indexOf("MacAddress") >= 0) {
+                            $(this).attr("value", $("#_" + currentFieldIndex + "__macAddress").val());
+                            $("#_" + currentFieldIndex + "__macAddress").val("");
+                        } else if ($(this).attr("name").indexOf("IPAddress") >= 0) {
+                            $(this).attr("value", $("#_" + currentFieldIndex + "__IPAddress").val());
+                            $("#_" + currentFieldIndex + "__IPAddress").val("");
+                        } else if ($(this).attr("name").indexOf("Username") >= 0) {
+                            $(this).attr("value", $("#_" + currentFieldIndex + "__Username").val());
+                            $("#_" + currentFieldIndex + "__Username").val("");
+                        } else if ($(this).attr("name").indexOf("Password") >= 0) {
+                            $(this).attr("value", $("#_" + currentFieldIndex + "__Password").val());
+                            $("#_" + currentFieldIndex + "__Password").val("");
+                        }
+                    });
+                    $(serversRow).appendTo("#updateTable");
+                    //change back textboxes to span if necessary.
+                    updateLoader("#updateTable");
+                }
+                if (currentFieldIndex > 0) {
+                    //remove current newServer from list
+                    $(this).remove();
+                }
+                currentFieldIndex++;
+            });
         }
         var i = 1;
         function newSrvBox() {
-            var mainField = $("#newServer1").clone();
-            $(mainField).attr("id", "newServer[" + i + "]");
-            $(mainField).find("#_0__friendlyName").attr("name", "[" + i + "].friendlyName");
-            $(mainField).find("#_0__macAddress").attr("name", "[" + i + "].macAddress");
-            $(mainField).find("#_0__remotePSAddress").attr("name", "[" + i + "].remotePSAddress");
-            $(mainField).find("#_0__username").attr("name", "[" + i + "].username");
-            $(mainField).find("#_0__password").attr("name", "[" + i + "].password");
-            $(mainField).find("#_0__IPAddress").attr("name", "[" + i + "].IPAddress");
+            var mainField = $("#newServer0").clone();
+            $(mainField).attr("id", "newServer" + i);
+            var fn = $(mainField).find("#_0__friendlyName");
+            fn.attr("name", "[" + i + "].friendlyName");
+            fn.attr("id", "_" + i + "__friendlyName");
+            fn.val("");
+            var ma = $(mainField).find("#_0__macAddress");
+            ma.attr("name", "[" + i + "].macAddress");
+            ma.attr("id", "_" + i + "__macAddress");
+            ma.val("");
+            var rp = $(mainField).find("#_0__remotePSAddress");
+            rp.attr("name", "[" + i + "].remotePSAddress");
+            rp.attr("id", "_" + i + "__remotePSAddress");
+            rp.val("");
+            var u = $(mainField).find("#_0__username");
+            u.attr("name", "[" + i + "].username");
+            u.attr("id", "_" + i + "__username");
+            u.val("");
+            var p = $(mainField).find("#_0__password");
+            p.attr("name", "[" + i + "].password");
+            p.attr("id", "_" + i + "__password");
+            p.val("");
+            var ia = $(mainField).find("#_0__IPAddress");
+            ia.attr("name", "[" + i + "].IPAddress");
+            ia.attr("id", "_" + i + "__IPAddress");
+            ia.val("");
             i++;
             var separator = $("#sepa1").clone();
             $(separator).attr("id", "sepa" + i);
